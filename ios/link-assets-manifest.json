@@ -1,0 +1,13 @@
+{
+  "migIndex": 1,
+  "data": [
+    {
+      "path": "assets/fonts/BalooThambi2-Bold.ttf",
+      "sha1": "4b4a33f5c45f60c5b240c0ae73542df239d9179b"
+    },
+    {
+      "path": "assets/fonts/BalooThambi2-Regular.ttf",
+      "sha1": "07fd2fc23039c2cf6a7653adaffb44c5ffd9de57"
+    }
+  ]
+}
