@@ -1,4 +1,4 @@
 export const FONTS={
-    REGULAR:'BalooThambi2-regular',
+    REGULAR:'BalooThambi2-Regular',
     BOLD:"BalooThambi2-Bold"
 }

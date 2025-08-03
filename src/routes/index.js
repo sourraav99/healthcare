@@ -3,6 +3,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import MainStack from './main/mainStack';
 import AuthStack from './auth/authStack';
 import { SplashScreen } from '../layouts';
+import { StatusBar } from 'react-native';
 // import AuthStack from './AuthStack';
 // import MainStack from './MainStack';
 // import SplashScreen from '../screens/SplashScreen'; // your custom splash screen
@@ -14,9 +15,8 @@ const RootStack = () => {
   useEffect(() => {
     // Simulate async check (e.g., from storage or API)
     const checkAuth = async () => {
-      await new Promise(resolve => setTimeout(resolve, 2000)); // simulate 2s splash
-      // Replace below with real auth logic
-      const userToken = null; // or something like AsyncStorage.getItem('token')
+      await new Promise(resolve => setTimeout(resolve, 2000)); 
+      const userToken = 'sjnsknsknmask'; 
       setIsLoggedIn(!!userToken);
       setIsLoading(false);
     };
@@ -27,9 +27,16 @@ const RootStack = () => {
   if (isLoading) return <SplashScreen />;
 
   return (
-    <NavigationContainer >
-      {isLoggedIn ? <MainStack /> : <AuthStack />}
-    </NavigationContainer>
+    <>
+      <StatusBar
+        translucent={true}
+        backgroundColor="transparent"
+        barStyle="dark-content"
+      />
+      <NavigationContainer>
+        {isLoggedIn ? <MainStack /> : <AuthStack />}
+      </NavigationContainer>
+    </>
   );
 };
 

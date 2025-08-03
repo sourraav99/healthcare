@@ -8,7 +8,7 @@ const Stack = createNativeStackNavigator();
 const MainStack = () => {
   return (
     <Stack.Navigator screenOptions={{headerShown:false}}>
-      <Stack.Screen name={SCREENS.HOME} component={BottomStack} />
+      <Stack.Screen name={SCREENS.BOTTOM} component={BottomStack} />
       <Stack.Screen name={SCREENS.REMINDER} component={ReminderScreen} />
     </Stack.Navigator>
   );

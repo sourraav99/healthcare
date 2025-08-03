@@ -5,9 +5,12 @@ import {
   Animated,
   StyleSheet,
   Dimensions,
+  StatusBar,
 } from 'react-native';
+import { COLORS } from '../../res/colors';
+import { FONTS } from '../../res/fonts';
+import { fontSizes, height, useFontScale } from '../../hooks/responsive';
 
-const { width, height } = Dimensions.get('window');
 
 const SplashScreen = ({ onFinish }) => {
   const scaleAnim = useRef(new Animated.Value(1)).current;
@@ -17,7 +20,7 @@ const SplashScreen = ({ onFinish }) => {
     const timeout = setTimeout(() => {
       Animated.parallel([
         Animated.timing(scaleAnim, {
-          toValue: 20, 
+          toValue: 20,
           duration: 1500,
           useNativeDriver: true,
         }),
@@ -29,13 +32,14 @@ const SplashScreen = ({ onFinish }) => {
       ]).start(() => {
         if (onFinish) onFinish();
       });
-    }, 500);
+    }, 1000);
 
     return () => clearTimeout(timeout);
   }, []);
 
   return (
     <View style={styles.container}>
+ 
       <Animated.View
         style={[
           styles.circle,
@@ -55,21 +59,21 @@ const SplashScreen = ({ onFinish }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ffffff',
+    backgroundColor: COLORS.white,
     justifyContent: 'center',
     alignItems: 'center',
   },
   circle: {
     position: 'absolute',
-    width: 200,
-    height: 200,
+    width: height * 0.2,
+    height: height * 0.2,
     borderRadius: 100,
-    backgroundColor: '#5391B4',
+    backgroundColor: COLORS.primary,
   },
   text: {
-    fontSize: 28,
+    fontSize: useFontScale(28),
     fontWeight: 'bold',
-    color: '#ffffff',
+    color: COLORS.white,
     position: 'absolute',
   },
 });
