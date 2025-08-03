@@ -9,8 +9,11 @@ import InputField from '../../components/inputField'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import TextComp from '../../components/textComp'
 import { emailRegex } from '../loginScreen'
+import { CommonActions, useNavigation } from '@react-navigation/native'
+import { SCREENS } from '..'
 
 const SignupScreen = () => {
+  const navigation = useNavigation()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
@@ -18,6 +21,8 @@ const SignupScreen = () => {
 
 
   const handleRegister = () => {
+    return navigation.navigate(SCREENS.PRE_LOADING)
+
     const newErrors = { email: '', password: '', confirmPassword: '' }
     if (!email.trim()) {
       newErrors.email = 'Email is required. *'
@@ -40,6 +45,17 @@ const SignupScreen = () => {
       console.log('registering');
 
     }
+  }
+
+  const handleLogin = () => {
+    navigation.dispatch(
+      CommonActions.reset({
+        index: 0,
+        routes: [
+          { name: SCREENS.LOGIN },
+        ],
+      })
+    )
   }
 
   return (
@@ -72,7 +88,7 @@ const SignupScreen = () => {
                 style={styles.inputIcon} />}
             />
             {/* <TextComp style={styles.errorText}>Email is required *</TextComp> */}
-            {errors.email? <TextComp style={styles.errorText}>{errors.email}</TextComp>:null}
+            {errors.email ? <TextComp style={styles.errorText}>{errors.email}</TextComp> : null}
 
           </View>
 
@@ -89,7 +105,7 @@ const SignupScreen = () => {
               icon={<FontAwesome6 name='lock' size={20} color={COLORS.text} iconStyle='solid'
                 style={styles.inputIcon} />}
             />
-           {errors.password? <TextComp style={styles.errorText}>{errors.password}</TextComp>:null}
+            {errors.password ? <TextComp style={styles.errorText}>{errors.password}</TextComp> : null}
           </View>
 
           <View style={styles.spacer} />
@@ -106,14 +122,14 @@ const SignupScreen = () => {
                 style={styles.inputIcon} />}
             />
             {/* <TextComp style={styles.errorText}>Confirm password doesn't match.</TextComp> */}
-            {errors.confirmPassword? <TextComp style={styles.errorText}>{errors.confirmPassword}</TextComp>:null}
+            {errors.confirmPassword ? <TextComp style={styles.errorText}>{errors.confirmPassword}</TextComp> : null}
 
           </View>
 
           <View style={styles.loginContainer}>
             <View style={styles.loginRow}>
               <TextComp>Already Have an Account? </TextComp>
-              <TouchableOpacity>
+              <TouchableOpacity onPress={handleLogin}>
                 <TextComp style={styles.loginLink}>Click here to Login</TextComp>
               </TouchableOpacity>
             </View>

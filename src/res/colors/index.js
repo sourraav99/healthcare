@@ -9,5 +9,10 @@ export const COLORS={
     softGreen:'#C8F5C4',
     voilet:"#D7D0FF",
     softPink:'#F5E1E9',
-    red:'red'
+    red:'red',
+    lightBlue:"#1C82DF",
+    softPink:"#F5E1E9",
+    violetLight:'#D7D0FF',
+    matchaGreen:"#C8F5C4",
+    grey:'#D9D9D9'
 }

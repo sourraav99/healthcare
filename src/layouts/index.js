@@ -5,7 +5,8 @@ export const SCREENS = {
     HOME: 'Home',
     SPLASH:'Splash',
     BOTTOM:'bottom',
-    NEARBY_PHARMA:'NearbyPharmacy'
+    NEARBY_PHARMA:'NearbyPharmacy',
+    PRE_LOADING:'preLoading',
 }
 
 export { default as HomeScreen } from './homeScreen';
@@ -14,3 +15,4 @@ export { default as SignupScreen } from './signupScreen';
 export { default as ReminderScreen } from './reminderScreen';
 export { default as SplashScreen } from './splashScreen';
 export { default as NearbyPharmacy } from './nearbyPharmacy';
+export { default as PreLoading } from './preLoader';
