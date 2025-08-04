@@ -9,10 +9,11 @@ const TextComp = ({
     fontSize = fontSizes.medium,
     fontFamily = FONTS.REGULAR,
     color,
+    numberOfLines,
     ...props
 }) => {
     return (
-        <Text style={[{ fontSize: fontSize, fontFamily: fontFamily, color: color,  }, style]}
+        <Text numberOfLines={numberOfLines} style={[{ fontSize: fontSize, fontFamily: fontFamily, color: color,  }, style]}
             {...props} >
             {children}
         </Text>

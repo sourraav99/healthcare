@@ -19,8 +19,7 @@ import { COLORS } from '../../res/colors'
 import { IMAGES } from '../../res/images'
 import { useNavigation } from '@react-navigation/native'
 import InputField from '../../components/inputField'
-// import DocumentPicker from 'react-native-document-picker';
-
+import { pick } from '@react-native-documents/picker'
 
 // import FontAwesome from 'react-native-vector-icons/fontawesome6'
 
@@ -59,16 +58,17 @@ const NearbyPharmacy = () => {
 
 
   const handleFileSelect = async () => {
-    // try {
-    //   const res = await DocumentPicker.pickSingle({
-    //     type: [DocumentPicker.types.images, DocumentPicker.types.pdf],
-    //   });
-    //   console.log('Selected file:', res);
-    //   setSelectedFile(res);
-    //   setSelectedOption('file');
-    // } catch (err) {
-    //   if (!DocumentPicker.isCancel(err)) console.error('File select error:', err);
-    // }
+    try {
+      const [file] = await pick({
+        type: ['application/pdf', 'image/*'],
+      }); 
+      console.log('Picked file:', file);
+      console.log('selected file name:', file?.name); // put before setState
+      setSelectedFile(file);
+      setSelectedOption('file');
+    } catch (err) {
+      console.error('File picker error:', err);
+    }
   };
   const handleContinue = () => {
     if (selectedOption === 'url') {
@@ -156,17 +156,11 @@ const NearbyPharmacy = () => {
         )}
 
         {selectedOption === 'file' && selectedFile && (
-          <View style={{
-            marginTop: width * 0.03,
-            padding: 12,
-            backgroundColor: '#eee',
-            borderRadius: 10,
-          }}>
-            <TextComp style={{ fontSize: fontSizes.medium, color: COLORS.text }}>
-              Selected File: {selectedFile.name}
-            </TextComp>
+          <View style={{ backgroundColor:'lightgrey',padding:16,borderRadius:12 , marginTop: width * 0.03, }}>
+            <TextComp numberOfLines={1}>Selected File: {selectedFile.name}</TextComp>
           </View>
         )}
+
         <TouchableOpacity
           // onPress={handleLogin}
           style={styles.loginButton}>
