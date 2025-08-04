@@ -12,6 +12,7 @@ import { emailRegex } from '../loginScreen'
 import { CommonActions, useNavigation } from '@react-navigation/native'
 import { SCREENS } from '..'
 
+
 const SignupScreen = () => {
   const navigation = useNavigation()
   const [email, setEmail] = useState('')
@@ -21,7 +22,7 @@ const SignupScreen = () => {
 
 
   const handleRegister = () => {
-    return navigation.navigate(SCREENS.PRE_LOADING)
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[^A-Za-z0-9]).{8,}$/;
 
     const newErrors = { email: '', password: '', confirmPassword: '' }
     if (!email.trim()) {
@@ -31,8 +32,8 @@ const SignupScreen = () => {
     }
     if (!password.trim()) {
       newErrors.password = 'Password is required. *'
-    } else if (password.length < 4) {
-      newErrors.password = 'Atleast 4 characters is required. *';
+    } else if (!passwordRegex.test(password)) {
+      newErrors.password = 'Password must be at least 8 characters, with 1 uppercase, 1 lowercase, and 1 special character.*';
     }
     if (!confirmPassword.trim()) {
       newErrors.confirmPassword = 'Please confirm your password. *'
@@ -42,10 +43,11 @@ const SignupScreen = () => {
     setErrors(newErrors)
     const hasErrors = Object.values(newErrors).some(Boolean)
     if (!hasErrors) {
-      console.log('registering');
-
+      navigation.navigate(SCREENS.PRE_LOADING, { email: email, password: password, comingFrom: SCREENS.SIGNUP })
     }
   }
+
+
 
   const handleLogin = () => {
     navigation.dispatch(

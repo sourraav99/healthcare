@@ -28,7 +28,7 @@ const BottomStack = () => {
       tabBarIcon: ({ focused }) => (
         <FontAwesome6
           name="house"
-          size={28}
+          size={22}
           color={!focused ? COLORS.text : COLORS.primary}
           iconStyle={'solid'}
         />
@@ -41,7 +41,7 @@ const BottomStack = () => {
         tabBarIcon: ({ focused }) => (
           <FontAwesome6
             name="location-dot"
-            size={28}
+            size={22}
             color={!focused ? COLORS.text : COLORS.primary}
             iconStyle={'solid'}
           />

@@ -16,6 +16,8 @@ const InputField = ({
     containerStyle,
     onFocus,
     onBlur,
+    borderWidth=1,
+    backgroundColor='white',
     ...props
 }) => {
     return (
@@ -25,10 +27,11 @@ const InputField = ({
                 flexDirection: 'row',
                 justifyContent: 'space-between',
                 borderRadius: 10,
-                borderWidth: 1,
+                borderWidth: borderWidth,
                 borderColor: COLORS.border,
                 position: 'relative',
                 width: '100%',
+                backgroundColor:backgroundColor
             }}>
                 {icon && (
                     <View style={{ paddingHorizontal: usePercentageWidth(3) }}>

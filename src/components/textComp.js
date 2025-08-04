@@ -12,7 +12,7 @@ const TextComp = ({
     ...props
 }) => {
     return (
-        <Text style={[{ fontSize: fontSize, fontFamily: fontFamily, color: color, lineHeight:fontSizes.normalText * 1.5 }, style]}
+        <Text style={[{ fontSize: fontSize, fontFamily: fontFamily, color: color,  }, style]}
             {...props} >
             {children}
         </Text>

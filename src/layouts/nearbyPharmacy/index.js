@@ -7,8 +7,9 @@ import {
   ScrollView,
   Dimensions,
   Pressable,
+  TouchableWithoutFeedback,
 } from 'react-native'
-import React from 'react'
+import React, { useState } from 'react'
 import Wrapper from '../../components/wrapper'
 import { FONTS } from '../../res/fonts'
 import { fontSizes, useFontScale, usePercentageHeight, width } from '../../hooks/responsive'
@@ -16,6 +17,11 @@ import TextComp from '../../components/textComp'
 import FontAwesome6 from '@react-native-vector-icons/fontawesome6'
 import { COLORS } from '../../res/colors'
 import { IMAGES } from '../../res/images'
+import { useNavigation } from '@react-navigation/native'
+import InputField from '../../components/inputField'
+// import DocumentPicker from 'react-native-document-picker';
+
+
 // import FontAwesome from 'react-native-vector-icons/fontawesome6'
 
 const pharmacies = [
@@ -46,13 +52,41 @@ const pharmacies = [
 ]
 
 const NearbyPharmacy = () => {
+  const navigation = useNavigation()
+  const [selectedOption, setSelectedOption] = useState(null);
+  const [url, setUrl] = useState('');
+  const [selectedFile, setSelectedFile] = useState(null);
+
+
+  const handleFileSelect = async () => {
+    // try {
+    //   const res = await DocumentPicker.pickSingle({
+    //     type: [DocumentPicker.types.images, DocumentPicker.types.pdf],
+    //   });
+    //   console.log('Selected file:', res);
+    //   setSelectedFile(res);
+    //   setSelectedOption('file');
+    // } catch (err) {
+    //   if (!DocumentPicker.isCancel(err)) console.error('File select error:', err);
+    // }
+  };
+  const handleContinue = () => {
+    if (selectedOption === 'url') {
+      console.log('Using URL:', url);
+    } else if (selectedOption === 'file') {
+      console.log('Using file:', selectedFile);
+    } else {
+      console.log('Nothing selected');
+    }
+  };
+
   return (
     <Wrapper
       headerStyles={styles.headerStyles}
       headerChildren={
         <>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => { navigation.goBack() }}>
               <FontAwesome6 name='arrow-left' color={COLORS.text} size={25} iconStyle='solid' />
             </TouchableOpacity>
             <View style={{ width: width * 0.08 }} />
@@ -65,7 +99,7 @@ const NearbyPharmacy = () => {
         </>
       }
     >
-      <ScrollView style={{ paddingHorizontal: width * 0.04 }}>
+      <ScrollView style={{ paddingHorizontal: width * 0.04, }}>
         <TextComp style={styles.sectionTitle}>Nearby Pharmacy</TextComp>
 
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
@@ -88,21 +122,57 @@ const NearbyPharmacy = () => {
         </ScrollView>
         <TextComp style={{ fontSize: useFontScale(25), lineHeight: useFontScale(26), alignSelf: 'center', marginTop: usePercentageHeight(3) }}>Upload Prescription</TextComp>
         <TextComp style={{ fontSize: fontSizes.medium, alignSelf: 'center', textAlign: 'center', marginTop: usePercentageHeight(1) }}>We will show the pharmacy that fits as per your prescription.</TextComp>
-        <View style={{ height: usePercentageHeight(22),marginTop:usePercentageHeight(2),alignItems:'center' ,width: '100%', flexDirection: 'row' ,borderWidth:0.5,borderColor:COLORS.border}}>
-          {/* <TouchableOpacity> */}
+        <View style={{ height: usePercentageHeight(19), borderRadius: 15, marginTop: usePercentageHeight(2), alignItems: 'center', width: '100%', flexDirection: 'row', borderWidth: 0.5, borderColor: COLORS.border }}>
+          <TouchableWithoutFeedback
+            onPress={() => {
+              setSelectedOption('url');
+              setSelectedFile(null);
+            }}
+          >
             <Image
               source={IMAGES.paste_link_gif}
-              style={{ flex: 1, width: '50%', height: usePercentageHeight(18) }}
+              style={{ flex: 1, width: '50%', height: usePercentageHeight(16) }}
             />
-          {/* </TouchableOpacity> */}
-          <Pressable>
+          </TouchableWithoutFeedback>
+          <TouchableWithoutFeedback
+            onPress={handleFileSelect}
+          >
             <Image
-            
+
               source={IMAGES.upload_file_gif}
-              style={{ flex: 1, width: '50%', height: usePercentageHeight(18) }}
+              style={{ flex: 1, width: '50%', height: usePercentageHeight(16) }}
             />
-          </Pressable>
+          </TouchableWithoutFeedback>
         </View>
+        {selectedOption === 'url' && (
+          <InputField
+            placeholder='Paste prescription URL'
+            value={url}
+            onChangeText={setUrl}
+            borderWidth={0}
+            backgroundColor='lightgrey'
+            containerStyle={{ marginTop: width * 0.03, marginBottom: 0 }}
+          />
+        )}
+
+        {selectedOption === 'file' && selectedFile && (
+          <View style={{
+            marginTop: width * 0.03,
+            padding: 12,
+            backgroundColor: '#eee',
+            borderRadius: 10,
+          }}>
+            <TextComp style={{ fontSize: fontSizes.medium, color: COLORS.text }}>
+              Selected File: {selectedFile.name}
+            </TextComp>
+          </View>
+        )}
+        <TouchableOpacity
+          // onPress={handleLogin}
+          style={styles.loginButton}>
+          <TextComp style={styles.loginButtonText}>Continue</TextComp>
+        </TouchableOpacity>
+        <View style={{ height: usePercentageHeight(10) }} />
       </ScrollView>
     </Wrapper>
   )
@@ -160,5 +230,18 @@ const styles = StyleSheet.create({
   },
   infoContainer: {
     padding: 8,
+  },
+  loginButton: {
+    marginTop: width * 0.03,
+    height: usePercentageHeight(6.5),
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#41B592'
+  },
+  loginButtonText: {
+    fontSize: useFontScale(26),
+    lineHeight: useFontScale(40),
+    color: COLORS.white
   }
 })

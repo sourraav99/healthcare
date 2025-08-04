@@ -35,7 +35,7 @@ const LoginScreen = () => {
     setError(newErrors);
     const hasErrors = Object.values(newErrors).some(Boolean)
     if (!hasErrors) {
-      console.log('proceeding')
+      navigation.navigate(SCREENS.PRE_LOADING, { email: email, password: password, comingFrom: SCREENS.LOGIN })
     }
   }
   const handleForgotPassword = () => {

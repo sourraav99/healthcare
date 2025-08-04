@@ -234,11 +234,11 @@ const HomeScreen = () => {
 
 
 
-                <TextComp style={{ fontSize: fontSizes.medium, marginBottom: usePercentageHeight(1), alignSelf: "center", fontWeight: "600" }}>On Health Products</TextComp>
+                <TextComp style={{ fontSize: fontSizes.medium,alignSelf: "center", fontWeight: "600" }}>On Health Products</TextComp>
 
                 <TouchableOpacity
                   style={{
-                    backgroundColor: COLORS.lightBlue, elevation: 5, shadowColor: '#000',
+                    backgroundColor: COLORS.lightBlue, elevation: 4, shadowColor: '#000',
                     shadowOpacity: 0.25,
                     shadowRadius: 3.84, alignItems: 'center', justifyContent: 'center', paddingVertical: usePercentageHeight(1.2), borderRadius: 8,
                   }}
@@ -247,8 +247,6 @@ const HomeScreen = () => {
                 </TouchableOpacity>
                 {/* <View style={{width:10}}/> */}
               </View>
-
-              {/* RIGHT IMAGE */}
               <Image
                 source={IMAGES.vit}
                 resizeMode="contain"
