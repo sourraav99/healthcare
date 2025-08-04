@@ -89,15 +89,11 @@ const PreLoader = () => {
       const res = await signInWithEmailAndPassword(getAuth(), email, password);
       console.log('User signed in:', JSON.stringify(res));
       const idToken = await res.user.getIdToken();
-      // console.log(idToken);
-      dispatch(setCredentials(idToken));
+      const uid = res.user.uid;
+
+    dispatch(setCredentials({ token: idToken, uid }));
+      
       Toast.show('Welcome back!');
-      // navigation.dispatch(
-      //   CommonActions.reset({
-      //     index: 0,
-      //     routes: [{ name: SCREENS.HOME }], // Replace with your target screen
-      //   })
-      // );
     } catch (error) {
       console.error('Login Error:', error);
       switch (error.code) {

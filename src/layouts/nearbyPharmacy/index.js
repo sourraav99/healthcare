@@ -8,11 +8,13 @@ import {
   Dimensions,
   Pressable,
   TouchableWithoutFeedback,
+  Keyboard,
+  Platform,
 } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Wrapper from '../../components/wrapper'
 import { FONTS } from '../../res/fonts'
-import { fontSizes, useFontScale, usePercentageHeight, width } from '../../hooks/responsive'
+import { fontSizes, height, useFontScale, usePercentageHeight, width } from '../../hooks/responsive'
 import TextComp from '../../components/textComp'
 import FontAwesome6 from '@react-native-vector-icons/fontawesome6'
 import { COLORS } from '../../res/colors'
@@ -20,6 +22,10 @@ import { IMAGES } from '../../res/images'
 import { useNavigation } from '@react-navigation/native'
 import InputField from '../../components/inputField'
 import { pick } from '@react-native-documents/picker'
+import Toast from "react-native-simple-toast";
+import firestore from '@react-native-firebase/firestore';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
+import { useSelector } from 'react-redux'
 
 // import FontAwesome from 'react-native-vector-icons/fontawesome6'
 
@@ -50,36 +56,142 @@ const pharmacies = [
   },
 ]
 
+
 const NearbyPharmacy = () => {
   const navigation = useNavigation()
+  const [bottomPadding, setBottomPadding] = useState(0);
   const [selectedOption, setSelectedOption] = useState(null);
   const [url, setUrl] = useState('');
   const [selectedFile, setSelectedFile] = useState(null);
+  const uid = useSelector(state => state.auth.uid);
 
+  const getUploadUrl = (mimeType) => {
+    const base = 'https://api.cloudinary.com/v1_1/dqs8q9daf';
+    if (mimeType === 'application/pdf') return `${base}/raw/upload`; // for PDFs
+    return `${base}/image/upload`; // for images
+  };
+
+  useEffect(() => {
+    const show = Keyboard.addListener('keyboardDidShow', e => {
+      if (Platform.OS == 'android') {
+        setBottomPadding(usePercentageHeight(35));
+      } else {
+        setBottomPadding(usePercentageHeight(0));
+      }
+    });
+    const hide = Keyboard.addListener('keyboardDidHide', () => {
+      setBottomPadding(0);
+    });
+
+    return () => {
+      show.remove();
+      hide.remove();
+    };
+  }, []);
 
   const handleFileSelect = async () => {
     try {
       const [file] = await pick({
         type: ['application/pdf', 'image/*'],
-      }); 
+      });
       console.log('Picked file:', file);
-      console.log('selected file name:', file?.name); // put before setState
+      console.log('selected file name:', file?.name);
       setSelectedFile(file);
       setSelectedOption('file');
     } catch (err) {
       console.error('File picker error:', err);
     }
   };
-  const handleContinue = () => {
+  const handleContinue = async () => {
     if (selectedOption === 'url') {
       console.log('Using URL:', url);
-    } else if (selectedOption === 'file') {
-      console.log('Using file:', selectedFile);
+      uploadUrlToFireStore(uid, url)
+      // Use this URL as needed
+    } else if (selectedOption === 'file' && selectedFile) {
+      const uploadedUrl = await uploadToCloudinary(selectedFile);
+      if (uploadedUrl) {
+        console.log('Uploaded file URL:', uploadedUrl);
+        await saveFileUrlForUser(uploadedUrl);
+        Toast.show('Uploaded and saved!');
+      } else {
+        console.log('Upload failed.');
+        Toast.show('Upload failed.');
+      }
     } else {
       console.log('Nothing selected');
     }
   };
 
+  const uploadUrlToFireStore = async (userId, url) => {
+    if (!url || url.trim().length < 1) {
+      Toast.show('Invalid URL');
+      console.log('Invalid URL');
+      return;
+    }
+
+    try {
+      await firestore()
+        .collection('UsersFileUrls')
+        .doc(userId)
+        .collection('urls') // <-- This is a subcollection
+        .add({
+          url,
+          createdAt: firestore.FieldValue.serverTimestamp(),
+        });
+
+      console.log('URL added successfully');
+      Toast.show('URL added successfully');
+      setSelectedOption(null);
+      setUrl('');
+    } catch (error) {
+      console.error('Error adding URL:', error);
+      Toast.show('Failed to add URL');
+    }
+  };
+
+
+
+  const uploadToCloudinary = async (file) => {
+    const uploadUrl = getUploadUrl(file.type);
+    const formData = new FormData();
+    formData.append('file', {
+      uri: file.uri,
+      name: file.name,
+      type: file.type,
+    });
+    formData.append('upload_preset', 'evge0wqb'); // Replace with your preset
+    formData.append('cloud_name', 'dqs8q9daf'); // Optional, if not in the URL
+    formData.append('resource_type', file.type.includes('pdf') ? 'raw' : 'image');
+    try {
+      const res = await fetch(uploadUrl, {
+        method: 'POST',
+        body: formData,
+      });
+      const data = await res.json();
+      // console.log('data----???', data);
+
+      console.log('Cloudinary URL:', data.secure_url);
+      setSelectedOption(null)
+      setSelectedFile(null)
+      return data.secure_url;
+    } catch (error) {
+      console.error('Cloudinary upload failed:', error);
+      Toast.show('Upload failed. Please try again.', Toast.LONG);
+      return null;
+    }
+  };
+
+  const saveFileUrlForUser = async (secureUrl) => {
+
+    await firestore()
+      .collection('UsersFileUrls')
+      .doc(uid)
+      .collection('uploads')
+      .add({
+        url: secureUrl,
+        uploadedAt: firestore.FieldValue.serverTimestamp(),
+      });
+  };
   return (
     <Wrapper
       headerStyles={styles.headerStyles}
@@ -99,7 +211,16 @@ const NearbyPharmacy = () => {
         </>
       }
     >
-      <ScrollView style={{ paddingHorizontal: width * 0.04, }}>
+      <KeyboardAwareScrollView
+        style={styles.scrollView}
+        contentContainerStyle={[styles.scrollContent, { paddingBottom: bottomPadding }]}
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+        enableOnAndroid={true}
+        enableAutomaticScroll={true}
+        extraScrollHeight={20}
+        extraHeight={120}
+      >
         <TextComp style={styles.sectionTitle}>Nearby Pharmacy</TextComp>
 
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
@@ -156,18 +277,18 @@ const NearbyPharmacy = () => {
         )}
 
         {selectedOption === 'file' && selectedFile && (
-          <View style={{ backgroundColor:'lightgrey',padding:16,borderRadius:12 , marginTop: width * 0.03, }}>
+          <View style={{ backgroundColor: 'lightgrey', padding: 16, borderRadius: 12, marginTop: width * 0.03, }}>
             <TextComp numberOfLines={1}>Selected File: {selectedFile.name}</TextComp>
           </View>
         )}
 
         <TouchableOpacity
-          // onPress={handleLogin}
+          onPress={handleContinue}
           style={styles.loginButton}>
           <TextComp style={styles.loginButtonText}>Continue</TextComp>
         </TouchableOpacity>
         <View style={{ height: usePercentageHeight(10) }} />
-      </ScrollView>
+      </KeyboardAwareScrollView>
     </Wrapper>
   )
 }
@@ -237,5 +358,12 @@ const styles = StyleSheet.create({
     fontSize: useFontScale(26),
     lineHeight: useFontScale(40),
     color: COLORS.white
-  }
+  },
+  scrollView: {
+    flex: 1,
+    paddingHorizontal: height * 0.01
+  },
+  scrollContent: {
+    flexGrow: 1,
+  },
 })

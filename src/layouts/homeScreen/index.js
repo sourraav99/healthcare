@@ -7,12 +7,16 @@ import TextComp from '../../components/textComp'
 import FontAwesome6 from '@react-native-vector-icons/fontawesome6'
 import { COLORS } from '../../res/colors'
 import { IMAGES } from '../../res/images'
+import { useSelector } from 'react-redux'
+import { useNavigation } from '@react-navigation/native'
+import { SCREENS } from '..'
 
 const HomeScreen = () => {
+  const navigation=useNavigation()
   const screenWidth = Dimensions.get('window').width;
   const slideAnim = useRef(new Animated.Value(-screenWidth)).current;
   const rightSlide = useRef(new Animated.Value(width)).current;
-
+  const uid = useSelector(state => state.auth.uid);
 
   useEffect(() => {
     Animated.parallel([
@@ -40,7 +44,7 @@ const HomeScreen = () => {
       id: 2,
       title: 'Reminders',
       icon: IMAGES.reminder,
-      onPress: () => console.log('Navigate to Reminders'),
+      onPress: () => navigation.navigate(SCREENS.REMINDER),
     },
     {
       id: 3,
